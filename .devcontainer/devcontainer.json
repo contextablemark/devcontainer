@@ -8,8 +8,7 @@
   "remoteUser": "developer",
 
   "mounts": [
-    "source=${localEnv:HOME}/.ssh,target=/home/developer/.ssh,type=bind,readonly",
-    "source=${localEnv:HOME}/.vscode-server,target=/home/developer/.vscode-server,type=bind"
+    "source=${localEnv:HOME}/.ssh,target=/home/developer/.ssh,type=bind,readonly"
   ],
 
   "runArgs": [
@@ -18,21 +17,6 @@
   ],
 
   "shutdownAction": "none",
-
-  "customizations": {
-    "vscode": {
-      "settings": {
-        "terminal.integrated.defaultProfile.linux": "zsh"
-      },
-      "extensions": [
-        "ms-python.python",
-        "ms-python.vscode-pylance",
-        "charliermarsh.ruff"
-      ]
-    }
-  },
-
-  "postCreateCommand": "bash .devcontainer/post-create.sh",
 
   "forwardPorts": [3000, 5000, 8000, 8080]
 }

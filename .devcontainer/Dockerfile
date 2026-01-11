@@ -81,7 +81,13 @@ WORKDIR /home/$USERNAME
 # Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
-# Create workspaces directory
+# Add first-run reminders to shell
+RUN echo '' >> /home/$USERNAME/.zshrc && \
+    echo '# First-time setup reminders' >> /home/$USERNAME/.zshrc && \
+    echo 'if [ ! -f ~/.config/gh/hosts.yml ]; then echo "⚠️  GitHub CLI not authenticated. Run: gh auth login"; fi' >> /home/$USERNAME/.zshrc && \
+    echo 'if [ ! -f ~/.claude/credentials.json ]; then echo "⚠️  Claude not authenticated. Run: claude"; fi' >> /home/$USERNAME/.zshrc
+
+# Create directories (owned by developer user)
 RUN mkdir -p /home/$USERNAME/workspaces
 
 # Set default working directory

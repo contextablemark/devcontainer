@@ -1,6 +1,6 @@
 # Universal Dev Container
 
-A self-contained VS Code Dev Container for OSS development. Everything lives inside the container—workspaces, Claude Code context, git config, gh auth—so you can pick up where you left off or move the container to another machine.
+A self-contained development environment for OSS development. Everything lives inside the container—workspaces, Claude Code context, git config, gh auth—so you can pick up where you left off or move the container to another machine.
 
 ## What's Included
 
@@ -16,18 +16,23 @@ A self-contained VS Code Dev Container for OSS development. Everything lives ins
 ## What's Bind-Mounted from Host
 
 - `~/.ssh` (readonly) - Your SSH keys
-- `~/.vscode-server` - VS Code extensions (shared across containers)
 
-## Setup
+## Quick Start (Standalone Docker)
 
-1. Ensure you have the directories on your host:
+1. Build the base image:
    ```bash
-   mkdir -p ~/.vscode-server
+   ./build.sh
    ```
 
-2. Open this folder in VS Code
+2. Launch a container:
+   ```bash
+   ./launch.sh              # uses default name "dev-environment"
+   ./launch.sh my-project   # or specify a custom name
+   ```
 
-3. When prompted, click "Reopen in Container" (or use Command Palette: `Dev Containers: Reopen in Container`)
+3. Connect with VS Code:
+   - Command Palette → `Dev Containers: Attach to Running Container...`
+   - Select your container
 
 4. First-time authentication inside the container:
    ```bash
@@ -41,18 +46,48 @@ A self-contained VS Code Dev Container for OSS development. Everything lives ins
    git clone git@github.com:your-org/your-repo.git
    ```
 
+## Alternative: VS Code Dev Container Workflow
+
+You can also use the standard VS Code Dev Container workflow:
+
+1. Open this folder in VS Code
+2. When prompted, click "Reopen in Container" (or use Command Palette: `Dev Containers: Reopen in Container`)
+
+## Helper Scripts
+
+| Script | Description |
+|--------|-------------|
+| `./build.sh` | Build the `dev-environment` Docker image |
+| `./launch.sh [name]` | Start or create a container (prompts for name if not provided) |
+| `./stop.sh` | Stop the running container (preserves state) |
+
+## Golden Images
+
+Save your fully configured environment as a "golden image" to quickly spin up new containers with all your tools, extensions, and configurations pre-installed:
+
+```bash
+# Commit your configured container as a golden image
+docker commit dev-environment dev-environment-golden
+```
+
+When `launch.sh` runs, it automatically uses `dev-environment-golden` if it exists, otherwise falls back to the base `dev-environment` image.
+
 ## Key Behaviors
 
-- **Container persists**: `shutdownAction: none` keeps it running when you close VS Code
-- **Named container**: Uses `--name dev-environment` so you always reconnect to the same one
+- **Container persists**: Containers keep running when you close VS Code (`shutdownAction: none`)
+- **Named containers**: Each container has a unique name so you can run multiple environments
+- **Per-container extensions**: VS Code extensions are stored in a Docker volume, isolated per container
 - **Everything inside**: Workspaces, Claude context, git config all live in the container
 
 ## Reconnecting
 
-Just open VS Code and use:
-- `Dev Containers: Attach to Running Container...` → select `dev-environment`
+Using VS Code:
+- `Dev Containers: Attach to Running Container...` → select your container
 
-Or reopen this folder—it will reuse the existing container.
+Or via command line:
+```bash
+docker exec -it dev-environment zsh
+```
 
 ## Moving to Another Machine
 
@@ -72,6 +107,6 @@ Then attach VS Code to it.
 
 ## Customization
 
-- Add tools: Edit `Dockerfile`
-- Add VS Code extensions: Edit `devcontainer.json` → `customizations.vscode.extensions`
-- Change ports: Edit `devcontainer.json` → `forwardPorts`
+- Add tools: Edit `.devcontainer/Dockerfile`
+- Change forwarded ports: Edit `.devcontainer/devcontainer.json` → `forwardPorts`
+- Add VS Code extensions: Install them in the container, then commit a golden image
