@@ -59,6 +59,9 @@ RUN curl -LsSf https://astral.sh/uv/install.sh | sh \
     && mv /root/.local/bin/uv /usr/local/bin/ \
     && mv /root/.local/bin/uvx /usr/local/bin/
 
+# Install pytest globally
+RUN pip install pytest
+
 # Install GitHub CLI
 RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
@@ -78,14 +81,15 @@ RUN groupadd --gid $USER_GID $USERNAME \
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-# Install Oh My Zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+# Configure Claude Code with MCP servers
+RUN echo '{"mcpServers":{"deepwiki":{"type":"http","url":"https://mcp.deepwiki.com/mcp"}}}' > /home/$USERNAME/.claude.json
 
 # Add first-run reminders to shell
 RUN echo '' >> /home/$USERNAME/.zshrc && \
     echo '# First-time setup reminders' >> /home/$USERNAME/.zshrc && \
+    echo 'if [ ! -f ~/.gitconfig ]; then echo "⚠️  Git not configured. Run: git config --global user.name \"Your Name\" && git config --global user.email \"you@example.com\""; fi' >> /home/$USERNAME/.zshrc && \
     echo 'if [ ! -f ~/.config/gh/hosts.yml ]; then echo "⚠️  GitHub CLI not authenticated. Run: gh auth login"; fi' >> /home/$USERNAME/.zshrc && \
-    echo 'if [ ! -f ~/.claude/credentials.json ]; then echo "⚠️  Claude not authenticated. Run: claude"; fi' >> /home/$USERNAME/.zshrc
+    echo 'if [ -z "$(ls -A ~/.claude 2>/dev/null)" ]; then echo "⚠️  Claude not authenticated. Run: claude"; fi' >> /home/$USERNAME/.zshrc
 
 # Create directories (owned by developer user)
 RUN mkdir -p /home/$USERNAME/workspaces

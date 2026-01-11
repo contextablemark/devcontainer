@@ -7,6 +7,9 @@
 
   "remoteUser": "developer",
 
+  "workspaceFolder": "/home/developer/workspaces",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/home/developer/workspaces,type=bind,consistency=delegated",
+
   "mounts": [
     "source=${localEnv:HOME}/.ssh,target=/home/developer/.ssh,type=bind,readonly"
   ],

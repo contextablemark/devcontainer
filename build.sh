@@ -9,4 +9,8 @@ docker build -t "$IMAGE_NAME" -f "$SCRIPT_DIR/.devcontainer/Dockerfile" "$SCRIPT
 
 echo ""
 echo "Done. Image '$IMAGE_NAME' is ready."
-echo "Run ./launch.sh to start the container."
+echo ""
+echo "Next steps to create the golden image:"
+echo "  1. Open this folder in VS Code"
+echo "  2. Select 'Rebuild and Reopen in Container'"
+echo "  3. Close VS Code and run ./commit-golden.sh"

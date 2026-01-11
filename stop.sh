@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CONTAINER_NAME="dev-environment"
+CONTAINER_NAME="${1:-dev-environment}"
 
 if docker ps --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     echo "Stopping container '$CONTAINER_NAME'..."

@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-BASE_IMAGE="dev-environment"
 GOLDEN_IMAGE="dev-environment-golden"
 DEFAULT_NAME="dev-environment"
 
@@ -13,14 +12,20 @@ else
     CONTAINER_NAME="${CONTAINER_NAME:-$DEFAULT_NAME}"
 fi
 
-# Use golden image if it exists, otherwise base image
-if docker image inspect "$GOLDEN_IMAGE" &> /dev/null; then
-    IMAGE_NAME="$GOLDEN_IMAGE"
-    echo "Using golden image: $GOLDEN_IMAGE"
-else
-    IMAGE_NAME="$BASE_IMAGE"
-    echo "Using base image: $BASE_IMAGE (no golden image found)"
+# Require golden image
+if ! docker image inspect "$GOLDEN_IMAGE" &> /dev/null; then
+    echo "Error: Golden image '$GOLDEN_IMAGE' not found."
+    echo ""
+    echo "To create the golden image:"
+    echo "  1. Run ./build.sh to build the base image"
+    echo "  2. Open this folder in VS Code"
+    echo "  3. Select 'Reopen in Container' (or 'Rebuild and Reopen in Container')"
+    echo "  4. Once VS Code is connected and the Dockerfile has executed,"
+    echo "     close VS Code and run ./commit-golden.sh"
+    exit 1
 fi
+
+echo "Using golden image: $GOLDEN_IMAGE"
 
 # Check if container exists
 if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
@@ -33,15 +38,14 @@ if docker ps -a --format '{{.Names}}' | grep -q "^${CONTAINER_NAME}$"; then
     fi
 else
     # Container doesn't exist - create it
-    # Use --entrypoint to override any entrypoint set during commit
-echo "Creating container '$CONTAINER_NAME'..."
+    echo "Creating container '$CONTAINER_NAME'..."
     docker run -d \
         --name "$CONTAINER_NAME" \
         --hostname "$CONTAINER_NAME" \
         --entrypoint "" \
         -v "$HOME/.ssh:/home/developer/.ssh:ro" \
         -v vscode:/vscode \
-        "$IMAGE_NAME" \
+        "$GOLDEN_IMAGE" \
         /bin/sh -c "sleep infinity"
 fi
 
