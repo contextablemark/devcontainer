@@ -28,7 +28,7 @@ else
         --name "$CONTAINER_NAME" \
         --hostname "$CONTAINER_NAME" \
         -v "$HOME/.ssh:/home/developer/.ssh:ro" \
-        -v "$HOME/.vscode-server:/home/developer/.vscode-server" \
+        -v vscode-server-$CONTAINER_NAME:/home/developer/.vscode-server \
         "$IMAGE_NAME" \
         sleep infinity
 fi
