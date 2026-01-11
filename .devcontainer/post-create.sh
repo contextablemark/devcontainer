@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo "Dev container ready!"
+echo ""
+echo "Tools:"
+echo "   Python: $(python --version)"
+echo "   Node:   $(node --version)"
+echo "   pnpm:   $(pnpm --version)"
+echo "   uv:     $(uv --version)"
+echo "   gh:     $(gh --version | head -1)"
+echo "   claude: $(claude --version 2>/dev/null || echo 'installed')"
+echo ""
+echo "Workspaces: ~/workspaces"
+echo ""
+echo "First-time setup:"
+echo "   gh auth login"
+echo "   claude  # to authenticate"
