@@ -6,6 +6,7 @@ ARG USER_GID=$USER_UID
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install all dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -50,7 +51,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Install global npm packages AS ROOT (before USER switch)
+# Install global npm packages (as root)
 RUN npm install -g pnpm@latest @anthropic-ai/claude-code
 
 # Install uv
@@ -68,22 +69,22 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     && apt-get install -y gh \
     && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user (AFTER all root installs)
+# Create non-root user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME -s /bin/zsh \
     && echo "$USERNAME ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
 
-# Switch to non-root user
 USER $USERNAME
 WORKDIR /home/$USERNAME
 
-# Install Oh My Zsh (as user)
+# Install Oh My Zsh
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 
 # Create workspaces directory
 RUN mkdir -p /home/$USERNAME/workspaces
 
+# Set default working directory
 WORKDIR /home/$USERNAME/workspaces
 
 CMD ["zsh"]
