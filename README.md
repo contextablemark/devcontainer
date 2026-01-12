@@ -18,6 +18,20 @@ A self-contained development environment for OSS development. Everything lives i
 
 - `~/.ssh` (readonly) - Your SSH keys
 
+## Pre-built Golden Image
+
+A ready-to-use golden image is available at:
+```
+contextable/dev-environment-golden
+```
+
+Pull it and skip the build steps:
+```bash
+docker pull contextable/dev-environment-golden
+docker tag contextable/dev-environment-golden dev-environment-golden
+./launch.sh my-project
+```
+
 ## Quick Start
 
 ### First-time setup: Create the golden image
